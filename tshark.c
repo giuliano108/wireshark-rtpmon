@@ -97,6 +97,10 @@
 #include <epan/funnel.h>
 #include "capture_opts.h"
 
+#ifdef HAVE_RTPMON
+#include "rtpmon.h"
+#endif
+
 /*
  * This is the template for the decode as option; it is shared between the
  * various functions that output the usage for this parameter.
@@ -319,6 +323,26 @@ print_usage(gboolean print_ver)
   fprintf(output, "                           n = write network address resolution information\n");
   fprintf(output, "  -X <key>:<value>         eXtension options, see the man page for details\n");
   fprintf(output, "  -z <statistics>          various statistics, see the man page for details\n");
+
+#ifdef HAVE_RTPMON
+  fprintf(output, "\n");
+  fprintf(output, "RTP monitor:\n");
+  fprintf(output, "  -M <key=value,..>        Enables the passive RTP monitor/stats collector.\n");
+  fprintf(output, "                           Options take the form of key=value pairs.\n");
+  fprintf(output, "                           Use a comma to separate multiple options.\n");
+  fprintf(output, "    qpath=%s\n", RTPMON_DEFAULT_QPATH);
+  fprintf(output, "        Statistics will be stored in the given path (\"%s\" by default).\n", RTPMON_DEFAULT_QPATH);
+  fprintf(output, "        Multiple files, named \"rtpmon-00000.bin\", will be created.\n");
+  fprintf(output, "        Each file is a sample of the \"rtpstream_tapinfo_t\" data structure\n");
+  fprintf(output, "        (see \"ui/cli/tap-rtp.c\").\n");
+  fprintf(output, "    qlen=%d\n", RTPMON_DEFAULT_QLEN);
+  fprintf(output, "        Keep (by default) %d samples.\n", RTPMON_DEFAULT_QLEN);
+  fprintf(output, "        That's %d minutes worth of data at %d ms dump interval.\n", (RTPMON_DEFAULT_QLEN*RTPMON_DEFAULT_DUMP_INTERVAL/1000/60), RTPMON_DEFAULT_DUMP_INTERVAL);
+  fprintf(output, "    dump-interval=%d\n", RTPMON_DEFAULT_DUMP_INTERVAL);
+  fprintf(output, "        Dump RTP statistics (by default) every %d milliseconds.\n", RTPMON_DEFAULT_DUMP_INTERVAL);
+  fprintf(output, "        Because timing is checked only as new RTP packets arrive, files\n");
+  fprintf(output, "        might not\n");
+#endif
 
   fprintf(output, "\n");
   fprintf(output, "Miscellaneous:\n");
@@ -856,7 +880,13 @@ main(int argc, char *argv[])
 #define OPTSTRING_I ""
 #endif
 
-#define OPTSTRING "2a:A:b:" OPTSTRING_B "c:C:d:De:E:f:F:G:hH:i:" OPTSTRING_I "K:lLnN:o:O:pPqr:R:s:S:t:T:u:vVw:W:xX:y:z:"
+#ifdef HAVE_RTPMON
+#define OPTSTRING_M "M"
+#else
+#define OPTSTRING_M ""
+#endif
+
+#define OPTSTRING "2a:A:b:" OPTSTRING_B "c:C:d:De:E:f:F:G:hH:i:" OPTSTRING_I "K:lL" OPTSTRING_M "nN:o:O:pPqr:R:s:S:t:T:u:vVw:W:xX:y:z:"
 
   static const char    optstring[] = OPTSTRING;
 
@@ -955,6 +985,10 @@ main(int argc, char *argv[])
   epan_init(register_all_protocols, register_all_protocol_handoffs, NULL, NULL,
             failure_message, open_failure_message, read_failure_message,
             write_failure_message);
+
+#ifdef HAVE_RTPMON
+  rtpmon_init();
+#endif
 
   /* Register all tap listeners; we do this before we parse the arguments,
      as the "-z" argument can specify a registered tap. */
@@ -1218,6 +1252,19 @@ main(int argc, char *argv[])
       arg_error = TRUE;
 #endif
       break;
+#ifdef HAVE_RTPMON
+    case 'M':
+      rtpmon.active = 1;
+      if(optind < argc && argv[optind][0] != '-') {
+          rtpmon_parse_options(argv[optind]);
+          optind++;
+          if (rtpmon.error) {
+            cmdarg_err("%s", rtpmon.error);
+            return 1;
+          }
+      }
+      break;
+#endif
     case 'n':        /* No name resolution */
       gbl_resolv_flags = RESOLV_NONE;
       break;
@@ -2110,6 +2157,10 @@ capture(void)
   } else {
     g_string_append_printf(str, "%u interfaces", global_capture_opts.ifaces->len);
   }
+#ifdef HAVE_RTPMON
+  if(rtpmon.active)
+    fprintf(stderr, "RTP monitoring is on (qpath=%s,qlen=%d,dump_interval=%d)\n", rtpmon.qpath,rtpmon.qlen,rtpmon.dump_interval);
+#endif
   fprintf(stderr, "Capturing on %s\n", str->str);
   g_string_free(str, TRUE);
 
