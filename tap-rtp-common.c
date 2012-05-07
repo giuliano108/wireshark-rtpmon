@@ -45,6 +45,10 @@
 #include "ui/gtk/rtp_stream.h"
 #include "tap-rtp-common.h"
 
+#ifdef HAVE_RTPMON
+#include "rtpmon.h"
+#endif
+
 /* XXX: are changes needed to properly handle situations where
         info_all_data_present == FALSE ?
         E.G., when captured frames are truncated.
@@ -196,6 +200,15 @@ int rtpstream_packet(void *arg, packet_info *pinfo, epan_dissect_t *edt _U_, con
 	rtp_sample_t sample;
 
 	struct _rtp_conversation_info *p_conv_data = NULL;
+
+#ifdef HAVE_RTPMON
+    guint32 current_reltime = (gint32) (pinfo->fd->rel_ts.secs*1000)+(pinfo->fd->rel_ts.nsecs/1000000);
+    if ((current_reltime - rtpmon.last_dump) >= (guint32)rtpmon.dump_interval) {
+        /*fprintf(stdout,"Dump %d\n",current_reltime);*/
+        rtpmon.last_dump = current_reltime;
+        rtpmon_dump_sample(tapinfo);
+    }
+#endif
 
 	/* gather infos on the stream this packet is part of */
 	COPY_ADDRESS(&(tmp_strinfo.src_addr), &(pinfo->src));
