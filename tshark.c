@@ -1255,11 +1255,13 @@ main(int argc, char *argv[])
 #ifdef HAVE_RTPMON
     case 'M':
       rtpmon.active = 1;
+      process_stat_cmd_arg("rtp,streams");
       if(optind < argc && argv[optind][0] != '-') {
           rtpmon_parse_options(argv[optind]);
           optind++;
           if (rtpmon.error) {
-            cmdarg_err("%s", rtpmon.error);
+            if (strcmp(rtpmon.error,"") != 0)
+              cmdarg_err("%s", rtpmon.error);
             return 1;
           }
       }
