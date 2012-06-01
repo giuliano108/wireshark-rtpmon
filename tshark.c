@@ -333,6 +333,7 @@ print_usage(gboolean print_ver)
   fprintf(output, "    qpath=%s\n", RTPMON_DEFAULT_QPATH);
   fprintf(output, "        Statistics will be stored in the given path (\"%s\" by default).\n", RTPMON_DEFAULT_QPATH);
   fprintf(output, "        Multiple files, named \"rtpmon-00000.bin\", will be created.\n");
+  fprintf(output, "        \"rtpmonlast.txt\" will contain the index to the last dumped sample.\n");
   fprintf(output, "        Each file is a sample of the \"rtpstream_tapinfo_t\" data structure\n");
   fprintf(output, "        (see \"ui/cli/tap-rtp.c\").\n");
   fprintf(output, "    qlen=%d\n", RTPMON_DEFAULT_QLEN);
@@ -341,7 +342,7 @@ print_usage(gboolean print_ver)
   fprintf(output, "    dump-interval=%d\n", RTPMON_DEFAULT_DUMP_INTERVAL);
   fprintf(output, "        Dump RTP statistics (by default) every %d milliseconds.\n", RTPMON_DEFAULT_DUMP_INTERVAL);
   fprintf(output, "        Because timing is checked only as new RTP packets arrive, files\n");
-  fprintf(output, "        might not\n");
+  fprintf(output, "        might not get written at exact intervals.\n");
 #endif
 
   fprintf(output, "\n");
