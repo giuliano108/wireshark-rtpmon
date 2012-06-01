@@ -8,7 +8,7 @@
 #include "ui/gtk/rtp_stream.h"
 
 #define RTPMON_DEFAULT_QPATH         "/tmp"
-#define RTPMON_DEFAULT_QLEN          1800
+#define RTPMON_DEFAULT_QLEN          600
 #define RTPMON_DEFAULT_DUMP_INTERVAL 1000
 
 /*

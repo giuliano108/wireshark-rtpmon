@@ -881,7 +881,7 @@ main(int argc, char *argv[])
 #endif
 
 #ifdef HAVE_RTPMON
-#define OPTSTRING_M "M"
+#define OPTSTRING_M "M:"
 #else
 #define OPTSTRING_M ""
 #endif
@@ -1256,14 +1256,11 @@ main(int argc, char *argv[])
     case 'M':
       rtpmon.active = 1;
       process_stat_cmd_arg("rtp,streams");
-      if(optind < argc && argv[optind][0] != '-') {
-          rtpmon_parse_options(argv[optind]);
-          optind++;
-          if (rtpmon.error) {
-            if (strcmp(rtpmon.error,"") != 0)
-              cmdarg_err("%s", rtpmon.error);
-            return 1;
-          }
+      rtpmon_parse_options(optarg);
+      if (rtpmon.error) {
+	      if (strcmp(rtpmon.error,"") != 0)
+		      cmdarg_err("%s", rtpmon.error);
+	      return 1;
       }
       break;
 #endif

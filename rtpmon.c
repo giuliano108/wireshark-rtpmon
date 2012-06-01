@@ -26,12 +26,17 @@ void
 rtpmon_parse_options(char *argument) {
     char *tok,*kv,*k,*v,*tokpos;
     char error[256];
+    if (argument && argument[0] == '-') {
+        rtpmon.error = "-M requires an argument (i.e.: -M on)";
+        return;
+    }
     for (tok = strtok_r(argument, ",",&tokpos); tok && !rtpmon.error; tok = strtok_r(NULL, ",",&tokpos)) {
         if (tok) {
             kv = strdup(tok);
             k = strtok(kv,"=");
             v = strtok(NULL,"=");
-            if (strcmp(k,"qpath") == 0) {
+            if (strcmp(k,"on") == 0) {
+            } else if (strcmp(k,"qpath") == 0) {
                 if (v && strlen(v)) {
                     /* no checks made here, let fwrite fail later on */
                     rtpmon.qpath = strdup(v);
