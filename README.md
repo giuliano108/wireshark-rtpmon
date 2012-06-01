@@ -32,7 +32,11 @@ Building
 Usage
 -----
 
-    ./tshark -i eth1 -q -M qpath=~/rtpmon
+Invoke `tshark` as you'd normally do:
+
+    # ./tshark -i eth1 -q -M qpath=~/rtpmon
+
+Here are the additional command line options:
 
     # ./tshark --help
     [..]
