@@ -147,7 +147,7 @@ rtpmon_describe_rtp_stream_info(void) {
     printf("guint16         dest_port              (%4d,%4d)\n", (int)sizeof(guint16)         , (int)offsetof(rtp_stream_info_t,dest_port));
     printf("guint32         ssrc                   (%4d,%4d)\n", (int)sizeof(guint32)         , (int)offsetof(rtp_stream_info_t,ssrc));
     printf("guint8          pt                     (%4d,%4d)\n", (int)sizeof(guint8)          , (int)offsetof(rtp_stream_info_t,pt));
-    printf("gchar           *info_payload_type_str (%4d,%4d)\n", (int)sizeof(gchar)           , (int)offsetof(rtp_stream_info_t,info_payload_type_str));
+    printf("gchar           *info_payload_type_str (%4d,%4d)\n", (int)sizeof(gchar*)          , (int)offsetof(rtp_stream_info_t,info_payload_type_str));
     printf("guint32         npackets               (%4d,%4d)\n", (int)sizeof(guint32)         , (int)offsetof(rtp_stream_info_t,npackets));
     printf("guint32         first_frame_num        (%4d,%4d)\n", (int)sizeof(guint32)         , (int)offsetof(rtp_stream_info_t,first_frame_num));
     printf("guint32         setup_frame_number     (%4d,%4d)\n", (int)sizeof(guint32)         , (int)offsetof(rtp_stream_info_t,setup_frame_number));
@@ -205,4 +205,9 @@ rtpmon_describe_rtp_stream_info(void) {
     printf("bw_history_item              (size,ofs)(%4d,----):\n",(int)sizeof(bw_history_item));
     printf("double          time                   (%4d,%4d)\n", (int)sizeof(double)         , (int)offsetof(bw_history_item,time));
     printf("guint32         bytes                  (%4d,%4d)\n", (int)sizeof(guint32)        , (int)offsetof(bw_history_item,bytes));
+    printf("\n");
+    printf("address                      (size,ofs)(%4d,----):\n",(int)sizeof(address));
+    printf("address_type    type                   (%4d,%4d)\n", (int)sizeof(address_type)    , (int)offsetof(address,type));
+    printf("int             len                    (%4d,%4d)\n", (int)sizeof(int)             , (int)offsetof(address,len));
+    printf("void            *data                  (%4d,%4d)\n", (int)sizeof(const void*)     , (int)offsetof(address,data));
 }
