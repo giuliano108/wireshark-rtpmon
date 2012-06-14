@@ -107,6 +107,16 @@ rtpmon_dump_sample(rtpstream_tapinfo_t *tapinfo) {
             perror("Error writing to file");
             return 0;
         }
+        written = fwrite(strinfo->src_addr.data,1,strinfo->src_addr.len,fp);
+        if (written != (unsigned)strinfo->src_addr.len) {
+            perror("Error writing to file");
+            return 0;
+        }
+        written = fwrite(strinfo->dest_addr.data,1,strinfo->dest_addr.len,fp);
+        if (written != (unsigned)strinfo->dest_addr.len) {
+            perror("Error writing to file");
+            return 0;
+        }
         list = g_list_next(list);
     }
     rc = fclose(fp);
